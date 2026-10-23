@@ -1,0 +1,27 @@
+import QtQuick
+
+QtObject {
+    property string key: ""
+    property string name: ""
+    property color bgCanvas: "#000000"
+    property color bgSurface: "#000000"
+    property color bgRaised: "#000000"
+    property color bgHover: "#000000"
+    property color borderSubtle: "#000000"
+    property color borderControl: "#000000"
+    property color textPrimary: "#000000"
+    property color textSecondary: "#000000"
+    property color textMuted: "#000000"
+    property color actionPrimary: "#000000"
+    property color actionPrimaryHover: "#000000"
+    property color actionPrimaryPressed: "#000000"
+    property color actionOnPrimary: "#000000"
+    property color destructive: "#000000"
+    property color destructiveHover: "#000000"
+    property color destructivePressed: "#000000"
+    property color actionOnDestructive: "#000000"
+    property color statusSuccess: "#000000"
+    property color statusWarning: "#000000"
+    property color statusError: "#000000"
+    property color statusInfo: "#000000"
+}
