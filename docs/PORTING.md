@@ -40,4 +40,13 @@ Source: `~/.config/quickshell/dots-hyprland/dots/.config/quickshell/ii`.
 
 ## Ported services
 
+All core backend services are ported in `services/` and decoupled from `Translation`, `GlobalStates`, `Appearance` and `Hyprsunset`:
+
+- `AppSearch`, `LauncherApps`, `LauncherSearch`
+- `Audio`, `MprisController`
+- `Battery`, `Brightness`, `Idle`, `ResourceUsage`, `SystemInfo`, `DateTime`
+- `Network` (`network/WifiAccessPoint`), `BluetoothStatus`
+- `Notifications`, `PolkitService`, `Privacy`, `TrayService`
+- `HyprlandData`, `Wallpapers`
+
 Tracked in [PROGRESS.md](PROGRESS.md).

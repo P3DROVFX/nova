@@ -5,14 +5,14 @@ Legend: `[x]` done, `[~]` in progress, `[ ]` planned.
 ## Foundation
 
 - [x] Repository, assets, docs
-- [ ] Common: Config, Persistent, Directories
-- [ ] Theme, palettes, typography
-- [ ] Reusable widgets
-- [ ] Backend services ported
-- [ ] Desktop panel with wallpaper
-- [ ] Desktop regions: logo, ambient telemetry, icons, search
-- [ ] Shell switcher and Hyprland integration
-- [ ] Headless test harness
+- [x] Common: Config, Persistent, Directories
+- [x] Theme, palettes, typography
+- [x] Reusable widgets
+- [x] Backend services ported
+- [x] Desktop panel with wallpaper
+- [x] Desktop regions: logo, ambient telemetry, icons, search
+- [x] Shell switcher and Hyprland integration
+- [x] Headless test harness
 
 ## Next
 
