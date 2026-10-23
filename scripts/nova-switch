@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+default_shell="${NOVA_DEFAULT_SHELL:-ii}"
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/nova"
+state_file="$state_dir/active-shell"
+qs_dir="${XDG_CONFIG_HOME:-$HOME/.config}/quickshell"
+
+detect_active() {
+    if pgrep -af '(^|/)qs( |$)' 2>/dev/null | grep -v 'qs-guard\.sh' | grep -q -- '-c nova'; then
+        printf 'nova\n'
+        return
+    fi
+    if pgrep -af '(^|/)qs( |$)' 2>/dev/null | grep -v 'qs-guard\.sh' | grep -q -- "-c $default_shell"; then
+        printf '%s\n' "$default_shell"
+        return
+    fi
+    if [[ -f "$state_file" ]]; then
+        head -n 1 "$state_file"
+        return
+    fi
+    printf '%s\n' "$default_shell"
+}
+
+status() {
+    local current
+    current="$(detect_active)"
+    if pgrep -af '(^|/)qs( |$)' 2>/dev/null | grep -v 'qs-guard\.sh' | grep -q -- "-c $current"; then
+        printf '%s (running)\n' "$current"
+    else
+        printf '%s (stopped)\n' "$current"
+    fi
+}
+
+switch_to() {
+    local target="$1"
+    local current
+    current="$(detect_active)"
+
+    if [[ -z "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
+        printf 'nova-switch: must be run inside a Hyprland session\n' >&2
+        exit 1
+    fi
+
+    if [[ ! -f "$qs_dir/$target/shell.qml" ]]; then
+        printf 'nova-switch: unknown shell "%s" (%s/%s/shell.qml not found)\n' "$target" "$qs_dir" "$target" >&2
+        exit 1
+    fi
+
+    qs kill -c "$current" >/dev/null 2>&1 || killall qs quickshell >/dev/null 2>&1 || true
+    for _ in $(seq 30); do
+        pgrep -x qs >/dev/null 2>&1 || break
+        sleep 0.05
+    done
+
+    mkdir -p "$state_dir"
+    printf '%s\n' "$target" > "$state_file"
+
+    if command -v hyprctl >/dev/null 2>&1; then
+        hyprctl eval "hl.env(\"qsConfig\", \"$target\")" >/dev/null 2>&1 || true
+    fi
+
+    local guard="$qs_dir/$target/scripts/quickshell-guard/qs-guard.sh"
+    if [[ -x "$guard" ]]; then
+        MALLOC_CONF=narenas:1 setsid -f "$guard" -c "$target" >/dev/null 2>&1
+    else
+        MALLOC_CONF=narenas:1 setsid -f qs -c "$target" >/dev/null 2>&1
+    fi
+
+    if command -v hyprctl >/dev/null 2>&1; then
+        hyprctl notify 1 2000 0 "fontsize:14 Shell: $target" >/dev/null 2>&1 || true
+    fi
+    printf 'switched to %s\n' "$target"
+}
+
+cmd="${1:-status}"
+case "$cmd" in
+    status)
+        status
+        ;;
+    toggle)
+        if [[ "$(detect_active)" == "nova" ]]; then
+            switch_to "$default_shell"
+        else
+            switch_to "nova"
+        fi
+        ;;
+    nova|"$default_shell")
+        switch_to "$cmd"
+        ;;
+    *)
+        if [[ -f "$qs_dir/$cmd/shell.qml" ]]; then
+            switch_to "$cmd"
+        else
+            printf 'usage: nova-switch {nova|%s|toggle|status}\n' "$default_shell" >&2
+            exit 1
+        fi
+        ;;
+esac
