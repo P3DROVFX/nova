@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+run="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+work="${NOVA_TEST_DIR:-/tmp/nova-test}"
+socket="nova-test"
+width="${NOVA_TEST_WIDTH:-1920}"
+height="${NOVA_TEST_HEIGHT:-1080}"
+
+isolated_env() {
+    env -u HYPRLAND_INSTANCE_SIGNATURE -u DBUS_SESSION_BUS_ADDRESS \
+        WAYLAND_DISPLAY="$socket" \
+        XDG_CONFIG_HOME="$work/config" XDG_STATE_HOME="$work/state" XDG_CACHE_HOME="$work/cache" \
+        NOVA_DEV=1 "$@"
+}
+
+is_running() {
+    [[ -f "$work/session.pid" ]] && kill -0 "$(cat "$work/session.pid")" 2>/dev/null
+}
+
+start() {
+    stop
+    mkdir -p "$work/config" "$work/state" "$work/cache"
+    cat > "$work/session.sh" <<INNER
+#!/usr/bin/env bash
+kwin_wayland --virtual --socket $socket --width $width --height $height --no-lockscreen > "$work/kwin.log" 2>&1 &
+for _ in \$(seq 50); do [[ -S "$run/$socket" ]] && break; sleep 0.1; done
+WAYLAND_DISPLAY=$socket XDG_CONFIG_HOME="$work/config" XDG_STATE_HOME="$work/state" XDG_CACHE_HOME="$work/cache" NOVA_DEV=1 \
+    qs -p "$root" -n > "$work/qs.log" 2>&1 &
+wait
+INNER
+    chmod +x "$work/session.sh"
+    setsid env -u HYPRLAND_INSTANCE_SIGNATURE dbus-run-session -- "$work/session.sh" > "$work/session.log" 2>&1 &
+    echo $! > "$work/session.pid"
+    sleep 3
+    echo "started (logs: $work/qs.log)"
+}
+
+stop() {
+    if is_running; then
+        pkill -P "$(cat "$work/session.pid")" || true
+        pkill -f "kwin_wayland --virtual --socket $socket" || true
+        pkill -f "qs -p $root -n" || true
+        kill "$(cat "$work/session.pid")" 2>/dev/null || true
+    fi
+    rm -f "$work/session.pid" "$run/$socket" "$run/$socket.lock"
+}
+
+ipc() {
+    isolated_env qs -p "$root" ipc "$@"
+}
+
+case "${1:-}" in
+    start) start ;;
+    stop) stop ;;
+    restart) start ;;
+    logs) cat "$work/qs.log" ;;
+    screenshot) ipc call dev snapshot "${2:-/tmp/nova.png}" ;;
+    ipc) shift; ipc "$@" ;;
+    *) echo "usage: test-headless {start|stop|restart|logs|screenshot [path]|ipc ...}" >&2; exit 1 ;;
+esac
