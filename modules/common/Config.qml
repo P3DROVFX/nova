@@ -46,6 +46,10 @@ Singleton {
                 property string terminal: "kitty -1"
             }
 
+            property JsonObject lock: JsonObject {
+                property bool requirePasswordToPower: true
+            }
+
             property JsonObject audio: JsonObject {
                 property JsonObject protection: JsonObject {
                     property bool enable: true

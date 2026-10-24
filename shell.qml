@@ -5,6 +5,7 @@
 import qs.modules.common
 import qs.modules.desktop
 import qs.modules.dev
+import qs.modules.lock
 import QtQuick
 import Quickshell
 
@@ -12,6 +13,11 @@ ShellRoot {
     Loader {
         active: Config.ready
         sourceComponent: DesktopPanel {}
+    }
+
+    Loader {
+        active: Config.ready
+        sourceComponent: LockScreen {}
     }
 
     Loader {

@@ -13,6 +13,7 @@ Legend: `[x]` done, `[~]` in progress, `[ ]` planned.
 - [x] Desktop regions: logo, ambient telemetry, icons, search
 - [x] Shell switcher and Hyprland integration
 - [x] Headless test harness
+- [x] Lockscreen interface, authentication flow, and unlock animations
 
 ## Next
 
@@ -22,7 +23,6 @@ Legend: `[x]` done, `[~]` in progress, `[ ]` planned.
 - [ ] Notifications region
 - [ ] Media region
 - [ ] Tray region
-- [ ] Login / lockscreen as desktop state
 - [ ] Polkit as desktop state
 - [ ] Fixed palette family replacing matugen schemes
 - [ ] Wallpaper switching

@@ -5,6 +5,7 @@ import Quickshell
 
 Singleton {
     property bool searchActive: false
+    property bool revealed: true
     property var surfaces: []
 
     signal searchFocusRequested

@@ -16,33 +16,64 @@ Item {
         anchors.fill: parent
     }
 
-    DesktopHeader {
+    NovaReveal {
+        id: headerReveal
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.leftMargin: root.insetX
         anchors.rightMargin: root.insetX
         anchors.topMargin: root.insetTop
+        height: header.implicitHeight
+        shown: DesktopState.revealed
+
+        DesktopHeader {
+            id: header
+            anchors.fill: parent
+        }
     }
 
-    DesktopIcons {
+    NovaReveal {
         anchors.left: parent.left
         anchors.leftMargin: root.insetX
         anchors.verticalCenter: parent.verticalCenter
-        width: 3 * Config.options.desktop.iconCellWidth + 2 * Theme.metrics.gap
+        width: icons.width
+        height: icons.implicitHeight
+        shown: DesktopState.revealed
+        delay: 40
+
+        DesktopIcons {
+            id: icons
+            width: 3 * Config.options.desktop.iconCellWidth + 2 * Theme.metrics.gap
+        }
     }
 
-    DesktopTelemetry {
+    NovaReveal {
         anchors.right: parent.right
         anchors.rightMargin: root.insetX
         anchors.verticalCenter: parent.verticalCenter
+        width: telemetry.implicitWidth
+        height: telemetry.implicitHeight
+        shown: DesktopState.revealed
+        delay: 80
+
+        DesktopTelemetry {
+            id: telemetry
+        }
     }
 
-    DesktopSearch {
-        id: search
+    NovaReveal {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: root.insetBottom
         width: Math.min(parent.width * 0.4, 640)
+        height: search.implicitHeight
+        shown: DesktopState.revealed
+        delay: 80
+
+        DesktopSearch {
+            id: search
+            anchors.fill: parent
+        }
     }
 }

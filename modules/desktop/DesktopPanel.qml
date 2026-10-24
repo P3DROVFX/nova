@@ -4,6 +4,7 @@ import Quickshell.Wayland
 import Quickshell.Hyprland
 import Quickshell.Io
 import qs.modules.common
+import qs.modules.lock
 
 Scope {
     Variants {
@@ -31,6 +32,14 @@ Scope {
             DesktopSurface {
                 anchors.fill: parent
             }
+        }
+    }
+
+    Connections {
+        target: LockState
+
+        function onLockedChanged() {
+            DesktopState.revealed = !LockState.locked;
         }
     }
 
