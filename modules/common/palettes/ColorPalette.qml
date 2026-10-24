@@ -24,4 +24,10 @@ QtObject {
     property color statusWarning: "#000000"
     property color statusError: "#000000"
     property color statusInfo: "#000000"
+    property color dangerCanvas: "#000000"
+    property color dangerSurface: "#000000"
+    property color dangerRaised: "#000000"
+    property color dangerAccent: "#000000"
+    property color dangerAction: "#000000"
+    property color dangerText: "#000000"
 }

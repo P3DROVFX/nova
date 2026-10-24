@@ -7,12 +7,14 @@ FocusScope {
     property string text: ""
     property string variant: "primary"
     property bool large: false
+    property string labelRole: large ? "actionLarge" : "action"
     property bool keyPressed: false
 
     readonly property bool hovered: mouse.containsMouse
     readonly property bool pressed: mouse.pressed || keyPressed
     readonly property bool primary: variant === "primary"
     readonly property bool destructive: variant === "destructive"
+    readonly property bool alert: variant === "alert"
 
     signal clicked
 
@@ -28,6 +30,8 @@ FocusScope {
             return Theme.color.bgRaised;
         if (primary)
             return pressed ? Theme.color.actionPrimaryPressed : hovered ? Theme.color.actionPrimaryHover : Theme.color.actionPrimary;
+        if (alert)
+            return Theme.color.dangerAction;
         if (destructive)
             return pressed ? Theme.color.destructivePressed : hovered ? Theme.color.destructiveHover : Theme.color.destructive;
         return pressed ? Theme.color.bgCanvas : hovered ? Theme.color.bgHover : Theme.color.bgSurface;
@@ -38,6 +42,8 @@ FocusScope {
             return Theme.color.textMuted;
         if (primary)
             return Theme.color.actionOnPrimary;
+        if (alert)
+            return Theme.color.dangerText;
         if (destructive)
             return Theme.color.actionOnDestructive;
         return Theme.color.textPrimary;
@@ -46,7 +52,7 @@ FocusScope {
     Rectangle {
         anchors.fill: parent
         color: root.fillColor
-        border.width: root.primary || root.destructive ? 0 : Theme.metrics.borderWidth
+        border.width: root.primary || root.destructive || root.alert ? 0 : Theme.metrics.borderWidth
         border.color: root.enabled ? Theme.color.borderControl : Theme.color.borderSubtle
 
         Behavior on color {
@@ -60,7 +66,7 @@ FocusScope {
         id: label
         anchors.centerIn: parent
         text: root.text
-        role: root.large ? "actionLarge" : "action"
+        role: root.labelRole
         color: root.textColor
     }
 

@@ -30,6 +30,10 @@ Singleton {
         readonly property var monoLarge: ({ family: root.fonts.mono, size: 18, weight: Font.Normal, spacing: 0, upper: false })
         readonly property var monoInput: ({ family: root.fonts.mono, size: 40, weight: Font.Normal, spacing: 0, upper: false })
         readonly property var action: ({ family: root.fonts.mono, size: 14, weight: Font.Bold, spacing: 1, upper: true })
+        readonly property var clock: ({ family: root.fonts.mono, size: 24, weight: Font.Normal, spacing: 0, upper: false })
+        readonly property var subtitle: ({ family: root.fonts.mono, size: 20, weight: Font.Normal, spacing: 0.5, upper: true })
+        readonly property var fieldLabel: ({ family: root.fonts.mono, size: 16, weight: Font.Normal, spacing: 0.5, upper: true })
+        readonly property var alertLarge: ({ family: root.fonts.expressive, size: 44, weight: Font.Normal, spacing: 3, upper: true })
         readonly property var actionLarge: ({ family: root.fonts.mono, size: 32, weight: Font.Normal, spacing: 0, upper: true })
     }
 

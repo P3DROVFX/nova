@@ -22,4 +22,10 @@ ColorPalette {
     statusWarning: "#F2C66D"
     statusError: "#FF8D85"
     statusInfo: "#92C5F5"
+    dangerCanvas: "#15090A"
+    dangerSurface: "#1C0E0E"
+    dangerRaised: "#201313"
+    dangerAccent: "#C32B03"
+    dangerAction: "#FF2F12"
+    dangerText: "#D9D9D9"
 }
