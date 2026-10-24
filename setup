@@ -1,0 +1,119 @@
+#!/usr/bin/env bash
+# NOVA Shell Setup
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TARGET_DIR="${HOME}/.config/quickshell/nova"
+FONTS_DIR="${HOME}/.local/share/fonts/nova"
+BIN_DIR="${HOME}/.local/bin"
+
+color() {
+    printf "\033[%sm%s\033[0m\n" "$1" "$2"
+}
+
+info() {
+    color "1;32" "==> $1"
+}
+
+warn() {
+    color "1;33" "WARNING: $1"
+}
+
+check_cmd() {
+    if command -v "$1" >/dev/null 2>&1; then
+        printf "  ✓ %-16s [%s]\n" "$1" "$(command -v "$1")"
+    else
+        printf "  ✗ %-16s [missing]\n" "$1"
+    fi
+}
+
+install_fonts() {
+    info "Installing bundled fonts..."
+    mkdir -p "${FONTS_DIR}"
+    cp "${SCRIPT_DIR}/assets/fonts"/*.ttf "${FONTS_DIR}/"
+    if command -v fc-cache >/dev/null 2>&1; then
+        info "Updating font cache..."
+        fc-cache -f "${FONTS_DIR}"
+    fi
+}
+
+check_dependencies() {
+    info "Checking core dependencies..."
+    check_cmd quickshell
+    check_cmd hyprland
+    check_cmd fc-cache
+
+    info "Checking backend service utilities..."
+    check_cmd wpctl
+    check_cmd brightnessctl
+    check_cmd nmcli
+    check_cmd bluetoothctl
+    check_cmd playerctl
+}
+
+setup_links() {
+    info "Configuring directory..."
+    if [[ "${SCRIPT_DIR}" != "${TARGET_DIR}" ]]; then
+        mkdir -p "$(dirname "${TARGET_DIR}")"
+        if [[ -L "${TARGET_DIR}" ]] || [[ ! -e "${TARGET_DIR}" ]]; then
+            ln -sf "${SCRIPT_DIR}" "${TARGET_DIR}"
+            info "Linked ${SCRIPT_DIR} -> ${TARGET_DIR}"
+        else
+            warn "${TARGET_DIR} already exists and is not a symlink. Skipping link."
+        fi
+    fi
+
+    if [[ -f "${SCRIPT_DIR}/scripts/nova-switch" ]]; then
+        mkdir -p "${BIN_DIR}"
+        ln -sf "${SCRIPT_DIR}/scripts/nova-switch" "${BIN_DIR}/nova-switch"
+        info "Linked nova-switch to ${BIN_DIR}/nova-switch"
+    fi
+}
+
+show_help() {
+    cat <<EOF
+NOVA Shell Setup
+
+Usage:
+  ./setup <command>
+
+Commands:
+  install      Install bundled fonts, link configs, and verify setup
+  fonts        Install bundled fonts (Architype Stedelijk & IBM Plex Mono)
+  check        Verify system dependencies and tools
+  help         Show this help message
+
+EOF
+}
+
+case "${1:-install}" in
+    install)
+        info "Installing NOVA Shell..."
+        install_fonts
+        setup_links
+        check_dependencies
+        echo ""
+        info "Setup complete!"
+        echo "To test NOVA standalone:"
+        echo "  qs -c nova"
+        echo ""
+        echo "To switch between shells seamlessly:"
+        echo "  nova-switch nova"
+        echo ""
+        ;;
+    fonts)
+        install_fonts
+        ;;
+    check)
+        check_dependencies
+        ;;
+    help|--help|-h)
+        show_help
+        ;;
+    *)
+        echo "Unknown command: $1"
+        show_help
+        exit 1
+        ;;
+esac
